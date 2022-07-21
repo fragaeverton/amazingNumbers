@@ -1,12 +1,11 @@
 package numbers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
     public static Status status;
+    public static String[] propertiesList = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD"};
 
     public static void main(String[] args) {
 
@@ -16,7 +15,8 @@ public class Main {
                 "- enter two natural numbers to obtain the properties of the list:\n" +
                 "  * the first parameter represents a starting number;\n" +
                 "  * the second parameter shows how many consecutive numbers are to be processed;\n" +
-                "- separate the parameters with one space;" +
+                "- two natural numbers and a property to search for;\n" +
+                "- separate the parameters with one space;\n" +
                 "- enter 0 to exit.\n");
         status = Status.REQUEST;
 
@@ -27,87 +27,151 @@ public class Main {
     }
 
     private static void startRequest() {
-        System.out.print("\nEnter a request:");
+        System.out.print("\nEnter a request: ");
 
         Scanner sc = new Scanner(System.in);
         String input[] = sc.nextLine().split(" ");
-        boolean isNatural = true;
-        for (int i = 0; i < input.length; i++) {
-            if (!input[i].matches("\\d+" ) || Long.parseLong(input[i]) < 0){
-                System.out.println( (i == 0) ? "\nThe first parameter should be a natural number or zero." : "second parameter should be a natural number");
-                isNatural = false;
-                break;
-            }
-        }
-        if (isNatural) {
-            long n0 = Long.parseLong(input[0]);
-            List<Long> numbers = new ArrayList<>();
-            if (input.length > 1) {
-                for (long i = n0; i < Long.parseLong(input[1]) + n0; i++) {
-                    numbers.add(i);
+        switch (input.length){
+            case 1:
+                if (!input[0].matches("\\d+" ) || Long.parseLong(input[0]) < 0){
+                    System.out.println(  "\nThe first parameter should be a natural number or zero.");
+                } else {
+                    if(input[0].equals("0")){
+                        status = Status.FINISH;
+                        System.out.println("\nGoodbye!");
+                    }else{
+                        generateNumbers(input, 1);
+                    }
+
                 }
-            } else{
-                numbers.add(n0);
-            }
-            firstCheck(numbers);
-
+                break;
+            case 2:
+                if (!input[1].matches("\\d+" ) || Long.parseLong(input[1]) < 0){
+                    System.out.println(  "\nsecond parameter should be a natural number");
+                } else{
+                    generateNumbers(input, 2);
+                }
+                break;
+            case 3:
+                if (!Arrays.asList(propertiesList).contains(input[2].toUpperCase())){
+                    System.out.printf("\nThe property [%s] is wrong.\n" +
+                            "Available properties: " + Arrays.toString(propertiesList) + "\n", input[2].toUpperCase());
+                } else {
+                    generateNumbers(input, 3);
+                }
+                break;
         }
 
     }
-
-
-    private static void firstCheck(List<Long> numbers) {
-        if (numbers.get(0) < 0){
-            System.out.println("\nThe first parameter should be a natural number or zero.");
-        } else if (numbers.get(0) == 0){
-            status = Status.FINISH;
-            System.out.println("\nGoodbye!");
-        } else {
-            checkProperties(numbers);
+    private static void generateNumbers(String[] input, int parameter) {
+        List<Long> numbers = new ArrayList<>();
+        long l1 = Long.parseLong(input[0]);
+        switch (parameter){
+            case 1:
+                numbers.add(l1);
+                break;
+            case 2:
+            case 3:
+                long n = Long.parseLong(input[1]);
+                long range = l1 + n;
+                for (long l = l1; l < range; l++) {
+                    if(parameter == 2){
+                        numbers.add(l);
+                    }
+                    if(parameter == 3){
+                        switch (Properties.valueOf(input[2].toUpperCase())){
+                            case BUZZ:
+                                if (isBuzz(l)) {
+                                    numbers.add(l);
+                                }else{
+                                    range++;
+                                }
+                                break;
+                            case DUCK:
+                                if (isDuck(l)) {
+                                    numbers.add(l);
+                                }else{
+                                    range++;
+                                }
+                                break;
+                            case PALINDROMIC:
+                                if (isPalindromic(l)) {
+                                    numbers.add(l);
+                                }else{
+                                    range++;
+                                }
+                                break;
+                            case GAPFUL:
+                                if (isGapful(l)) {
+                                    numbers.add(l);
+                                }else{
+                                    range++;
+                                }
+                                break;
+                            case SPY:
+                                if (isSpy(l)) {
+                                    numbers.add(l);
+                                }else{
+                                    range++;
+                                }
+                                break;
+                            case EVEN:
+                                if (isEven(l)) {
+                                    numbers.add(l);
+                                }else{
+                                    range++;
+                                }
+                                break;
+                            case ODD:
+                                if (isOdd(l)) {
+                                    numbers.add(l);
+                                }else{
+                                    range++;
+                                }
+                                break;
+                        }
+                    }
+                }
+                break;
         }
+        checkProperties(numbers, parameter);
 
     }
 
-    private static void checkProperties(List<Long> numbers) {
+    private static void checkProperties(List<Long> numbers, int parameter) {
 
-        List<Boolean> isEven = new ArrayList<>();
-        List<Boolean> isOdd = new ArrayList<>();
-        List<Boolean> isBuzz = new ArrayList<>();
-        List<Boolean> isDuck = new ArrayList<>();
-        List<Boolean> isPalindromic = new ArrayList<>();
-        List<Boolean> isGapful = new ArrayList<>();
+        List<Boolean> evenList = new ArrayList<>();
+        List<Boolean> oddList = new ArrayList<>();
+        List<Boolean> buzzList = new ArrayList<>();
+        List<Boolean> duckList = new ArrayList<>();
+        List<Boolean> palindromicList = new ArrayList<>();
+        List<Boolean> gapfulList = new ArrayList<>();
+        List<Boolean> spyList = new ArrayList<>();
 
         for (long l : numbers){
-            isOdd.add(l % 2 != 0);
-            isEven.add(l % 2 == 0);
-            isBuzz.add(l % 7 == 0 | l % 10 == 7);
-            isDuck.add(String.valueOf(l).contains("0"));
-
-            String palindromic = "" + l;
-            StringBuilder sb = new StringBuilder();
-            for (int i = (palindromic.length() - 1); i >=0; --i){
-                sb.append(palindromic.charAt(i));
-            }
-            isPalindromic.add(palindromic.equals(String.valueOf(sb)));
-
-            String gapful = "" + l;
-            int n1 = Integer.parseInt(String.valueOf(gapful.charAt(0))) * 10;
-            int n2 = Integer.parseInt(String.valueOf(gapful.charAt(gapful.length() - 1)));
-            isGapful.add(gapful.length() > 2 && l % (n1 + n2) == 0);
+            oddList.add(isOdd(l));
+            evenList.add(isEven(l));
+            buzzList.add(isBuzz(l));
+            duckList.add(isDuck(l));
+            palindromicList.add(isPalindromic(l));
+            gapfulList.add(isGapful(l));
+            spyList.add(isSpy(l));
         }
-        printResolution(numbers, isBuzz, isDuck, isPalindromic, isGapful, isEven, isOdd);
+        printResolution(numbers, buzzList, duckList, palindromicList, gapfulList, spyList, evenList, oddList, parameter);
     }
 
 
-    private static void printResolution(List<Long> numbers, List<Boolean> isBuzz, List<Boolean> isDuck, List<Boolean> isPalindromic, List<Boolean> isGapful, List<Boolean> isEven, List<Boolean> isOdd) {
-        if (numbers.size() > 1){
+    private static void printResolution(List<Long> numbers, List<Boolean> buzzList, List<Boolean> duckList, List<Boolean> palindromicList, List<Boolean> gapfulList, List<Boolean> spyList, List<Boolean> evenList, List<Boolean> oddList, int parameter) {
+        if (parameter > 1){
+            System.out.println();
             for (int i = 0; i < numbers.size(); i++) {
-                String buzz = (isBuzz.get(i)) ? "buzz, " : "";
-                String duck = (isDuck.get(i)) ? "duck, " : "";
-                String palindromic = (isPalindromic.get(i)) ? "palindromic, " : "";
-                String gapful = (isGapful.get(i)) ? "gapful, " : "";
-                String type = (isEven.get(i)) ? "even" : "odd";
-                System.out.println(numbers.get(i) + " is " + buzz + duck + palindromic + gapful + type);
+                String buzz = (buzzList.get(i)) ? "buzz, " : "";
+                String duck = (duckList.get(i)) ? "duck, " : "";
+                String palindromic = (palindromicList.get(i)) ? "palindromic, " : "";
+                String gapful = (gapfulList.get(i)) ? "gapful, " : "";
+                String spy = (spyList.get(i)) ? "spy, " : "";
+                String type = (evenList.get(i)) ? "even" : "odd";
+                System.out.println(numbers.get(i) + " is " + buzz + duck + palindromic + gapful + spy + type);
             }
         } else {
             System.out.printf("\nProperties of %d\n" +
@@ -115,14 +179,62 @@ public class Main {
                     "duck: %b\n"+
                     "palindromic: %b\n" +
                     "gapful: %b\n" +
+                    "spy: %b\n" +
                     "even: %b\n"+
-                    "odd: %b\n", numbers.get(0), isBuzz.get(0), isDuck.get(0), isPalindromic.get(0), isGapful.get(0), isEven.get(0), isOdd.get(0) );
+                    "odd: %b\n", numbers.get(0), buzzList.get(0), duckList.get(0), palindromicList.get(0), gapfulList.get(0), spyList.get(0), evenList.get(0), oddList.get(0) );
         }
 
     }
 
+    private static boolean isBuzz(long number){
+        return (number % 7 == 0 | number % 10 == 7);
+    }
+
+    private static boolean isDuck(long number){
+        return String.valueOf(number).contains("0");
+    }
+
+    private static boolean isPalindromic(long number){
+        String palindromic = "" + number;
+        StringBuilder sb = new StringBuilder();
+        for (int i = (palindromic.length() - 1); i >=0; --i){
+            sb.append(palindromic.charAt(i));
+        }
+        return palindromic.equals(String.valueOf(sb));
+    }
+
+    private static boolean isGapful(long number){
+        String gapful = "" + number;
+        int n1 = Integer.parseInt(String.valueOf(gapful.charAt(0))) * 10;
+        int n2 = Integer.parseInt(String.valueOf(gapful.charAt(gapful.length() - 1)));
+        return (gapful.length() > 2 && number % (n1 + n2) == 0);
+    }
+
+    private static boolean isSpy(long number){
+        String[] digits = ("" + number).split("");
+        int product = 1, sum = 0;
+        for (String s : digits) {
+            int i = Integer.parseInt(s);
+            product = product * i;
+            sum += i;
+        }
+        return sum == product;
+    }
+
+    private static boolean isEven(long number){
+        return number % 2 == 0;
+    }
+
+    private static boolean isOdd(long number){
+        return number % 2 != 0;
+    }
+
     public enum Status {
         REQUEST, FINISH
+    }
+
+    public enum Properties{
+        BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD
     }
 
 }
