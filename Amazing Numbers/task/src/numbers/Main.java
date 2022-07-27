@@ -1,23 +1,23 @@
 package numbers;
 
+import numbers.enums.Status;
+import numbers.enums.Properties;
+
 import java.util.*;
+
+import static numbers.Messages.*;
+import static numbers.Rules.*;
+import static numbers.Input.*;
 
 public class Main {
 
     public static Status status;
-    public static String[] propertiesList = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD"};
+    public static String[] propertiesList = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "EVEN", "ODD"};
 
     public static void main(String[] args) {
 
-        System.out.print("Welcome to Amazing Numbers!\n\n" +
-                "Supported requests:\n" +
-                "- enter a natural number to know its properties;\n" +
-                "- enter two natural numbers to obtain the properties of the list:\n" +
-                "  * the first parameter represents a starting number;\n" +
-                "  * the second parameter shows how many consecutive numbers are to be processed;\n" +
-                "- two natural numbers and a property to search for;\n" +
-                "- separate the parameters with one space;\n" +
-                "- enter 0 to exit.\n");
+        welcome();
+
         status = Status.REQUEST;
 
         while (status == Status.REQUEST) {
@@ -27,118 +27,100 @@ public class Main {
     }
 
     private static void startRequest() {
-        System.out.print("\nEnter a request: ");
-
-        Scanner sc = new Scanner(System.in);
-        String input[] = sc.nextLine().split(" ");
-        switch (input.length){
-            case 1:
-                if (!input[0].matches("\\d+" ) || Long.parseLong(input[0]) < 0){
-                    System.out.println(  "\nThe first parameter should be a natural number or zero.");
-                } else {
-                    if(input[0].equals("0")){
-                        status = Status.FINISH;
-                        System.out.println("\nGoodbye!");
-                    }else{
-                        generateNumbers(input, 1);
-                    }
-
-                }
-                break;
-            case 2:
-                if (!input[1].matches("\\d+" ) || Long.parseLong(input[1]) < 0){
-                    System.out.println(  "\nsecond parameter should be a natural number");
-                } else{
-                    generateNumbers(input, 2);
-                }
-                break;
-            case 3:
-                if (!Arrays.asList(propertiesList).contains(input[2].toUpperCase())){
-                    System.out.printf("\nThe property [%s] is wrong.\n" +
-                            "Available properties: " + Arrays.toString(propertiesList) + "\n", input[2].toUpperCase());
-                } else {
-                    generateNumbers(input, 3);
-                }
-                break;
-        }
-
+        enterRequest();
+        status =  validateInput(status);
     }
-    private static void generateNumbers(String[] input, int parameter) {
+
+    public static void generateNumbers(long startNumber, long times, Properties p1, Properties p2, Quantity qtt) {
         List<Long> numbers = new ArrayList<>();
-        long l1 = Long.parseLong(input[0]);
-        switch (parameter){
-            case 1:
-                numbers.add(l1);
+        long range = startNumber + times;
+        switch (qtt){
+            case ONE:
+                numbers.add(startNumber);
                 break;
-            case 2:
-            case 3:
-                long n = Long.parseLong(input[1]);
-                long range = l1 + n;
-                for (long l = l1; l < range; l++) {
-                    if(parameter == 2){
+            case TWO:
+                for (long l = startNumber; l < range; l++) {
+                    numbers.add(l);
+                }
+                break;
+            case THREE:
+                for (long l = startNumber; l < range; l++) {
+                    if(isValid(l, p1)){
                         numbers.add(l);
+                    }else{
+                        range++;
                     }
-                    if(parameter == 3){
-                        switch (Properties.valueOf(input[2].toUpperCase())){
-                            case BUZZ:
-                                if (isBuzz(l)) {
-                                    numbers.add(l);
-                                }else{
-                                    range++;
-                                }
-                                break;
-                            case DUCK:
-                                if (isDuck(l)) {
-                                    numbers.add(l);
-                                }else{
-                                    range++;
-                                }
-                                break;
-                            case PALINDROMIC:
-                                if (isPalindromic(l)) {
-                                    numbers.add(l);
-                                }else{
-                                    range++;
-                                }
-                                break;
-                            case GAPFUL:
-                                if (isGapful(l)) {
-                                    numbers.add(l);
-                                }else{
-                                    range++;
-                                }
-                                break;
-                            case SPY:
-                                if (isSpy(l)) {
-                                    numbers.add(l);
-                                }else{
-                                    range++;
-                                }
-                                break;
-                            case EVEN:
-                                if (isEven(l)) {
-                                    numbers.add(l);
-                                }else{
-                                    range++;
-                                }
-                                break;
-                            case ODD:
-                                if (isOdd(l)) {
-                                    numbers.add(l);
-                                }else{
-                                    range++;
-                                }
-                                break;
-                        }
+                }
+                break;
+            case FOUR:
+                for (long l = startNumber; l < range; l++) {
+                    if(isValid(l, p1) && isValid(l, p2)){
+                        numbers.add(l);
+                    }else{
+                        range++;
                     }
                 }
                 break;
         }
-        checkProperties(numbers, parameter);
+
+
+        checkProperties(numbers, qtt);
 
     }
 
-    private static void checkProperties(List<Long> numbers, int parameter) {
+    private static boolean isValid(long l, Properties p1){
+        boolean isValid = false;
+        switch (p1){
+            case BUZZ:
+                if (isBuzz(l)) {
+                    isValid = true;
+                }
+                break;
+            case DUCK:
+                if (isDuck(l)) {
+                    isValid = true;
+                }
+                break;
+            case PALINDROMIC:
+                if (isPalindromic(l)) {
+                    isValid = true;
+                }
+                break;
+            case GAPFUL:
+                if (isGapful(l)) {
+                    isValid = true;
+                }
+                break;
+            case SPY:
+                if (isSpy(l)) {
+                    isValid = true;
+                }
+                break;
+            case SUNNY:
+                if (isSunny(l)) {
+                    isValid = true;
+                }
+                break;
+            case SQUARE:
+                if (isSquare(l)) {
+                    isValid = true;
+                }
+                break;
+            case EVEN:
+                if (isEven(l)) {
+                    isValid = true;
+                }
+                break;
+            case ODD:
+                if (isOdd(l)) {
+                    isValid = true;
+                }
+                break;
+        }
+        return isValid;
+    }
+
+    private static void checkProperties(List<Long> numbers, Quantity qtt) {
 
         List<Boolean> evenList = new ArrayList<>();
         List<Boolean> oddList = new ArrayList<>();
@@ -147,6 +129,8 @@ public class Main {
         List<Boolean> palindromicList = new ArrayList<>();
         List<Boolean> gapfulList = new ArrayList<>();
         List<Boolean> spyList = new ArrayList<>();
+        List<Boolean> squareList = new ArrayList<>();
+        List<Boolean> sunnyList = new ArrayList<>();
 
         for (long l : numbers){
             oddList.add(isOdd(l));
@@ -156,13 +140,25 @@ public class Main {
             palindromicList.add(isPalindromic(l));
             gapfulList.add(isGapful(l));
             spyList.add(isSpy(l));
+            sunnyList.add(isSunny(l));
+            squareList.add(isSquare(l));
         }
-        printResolution(numbers, buzzList, duckList, palindromicList, gapfulList, spyList, evenList, oddList, parameter);
+        printResolution(numbers, buzzList, duckList, palindromicList, gapfulList, spyList, sunnyList, squareList, evenList, oddList, qtt);
     }
 
 
-    private static void printResolution(List<Long> numbers, List<Boolean> buzzList, List<Boolean> duckList, List<Boolean> palindromicList, List<Boolean> gapfulList, List<Boolean> spyList, List<Boolean> evenList, List<Boolean> oddList, int parameter) {
-        if (parameter > 1){
+    private static void printResolution(List<Long> numbers,
+                                        List<Boolean> buzzList,
+                                        List<Boolean> duckList,
+                                        List<Boolean> palindromicList,
+                                        List<Boolean> gapfulList,
+                                        List<Boolean> spyList,
+                                        List<Boolean> sunnyList,
+                                        List<Boolean> squareList,
+                                        List<Boolean> evenList,
+                                        List<Boolean> oddList,
+                                        Quantity qtt) {
+        if (!qtt.equals(Quantity.ONE)){
             System.out.println();
             for (int i = 0; i < numbers.size(); i++) {
                 String buzz = (buzzList.get(i)) ? "buzz, " : "";
@@ -170,8 +166,10 @@ public class Main {
                 String palindromic = (palindromicList.get(i)) ? "palindromic, " : "";
                 String gapful = (gapfulList.get(i)) ? "gapful, " : "";
                 String spy = (spyList.get(i)) ? "spy, " : "";
+                String square = (squareList.get(i)) ? "square, " : "";
+                String sunny = (sunnyList.get(i)) ? "sunny, " : "";
                 String type = (evenList.get(i)) ? "even" : "odd";
-                System.out.println(numbers.get(i) + " is " + buzz + duck + palindromic + gapful + spy + type);
+                System.out.println(numbers.get(i) + " is " + buzz + duck + palindromic + gapful + spy + square + sunny + type);
             }
         } else {
             System.out.printf("\nProperties of %d\n" +
@@ -180,61 +178,22 @@ public class Main {
                     "palindromic: %b\n" +
                     "gapful: %b\n" +
                     "spy: %b\n" +
+                    "square: %b\n" +
+                    "sunny: %b\n" +
                     "even: %b\n"+
-                    "odd: %b\n", numbers.get(0), buzzList.get(0), duckList.get(0), palindromicList.get(0), gapfulList.get(0), spyList.get(0), evenList.get(0), oddList.get(0) );
+                    "odd: %b\n", numbers.get(0),
+                    buzzList.get(0),
+                    duckList.get(0),
+                    palindromicList.get(0),
+                    gapfulList.get(0),
+                    spyList.get(0),
+                    squareList.get(0),
+                    sunnyList.get(0),
+                    evenList.get(0),
+                    oddList.get(0) );
         }
 
     }
 
-    private static boolean isBuzz(long number){
-        return (number % 7 == 0 | number % 10 == 7);
-    }
-
-    private static boolean isDuck(long number){
-        return String.valueOf(number).contains("0");
-    }
-
-    private static boolean isPalindromic(long number){
-        String palindromic = "" + number;
-        StringBuilder sb = new StringBuilder();
-        for (int i = (palindromic.length() - 1); i >=0; --i){
-            sb.append(palindromic.charAt(i));
-        }
-        return palindromic.equals(String.valueOf(sb));
-    }
-
-    private static boolean isGapful(long number){
-        String gapful = "" + number;
-        int n1 = Integer.parseInt(String.valueOf(gapful.charAt(0))) * 10;
-        int n2 = Integer.parseInt(String.valueOf(gapful.charAt(gapful.length() - 1)));
-        return (gapful.length() > 2 && number % (n1 + n2) == 0);
-    }
-
-    private static boolean isSpy(long number){
-        String[] digits = ("" + number).split("");
-        int product = 1, sum = 0;
-        for (String s : digits) {
-            int i = Integer.parseInt(s);
-            product = product * i;
-            sum += i;
-        }
-        return sum == product;
-    }
-
-    private static boolean isEven(long number){
-        return number % 2 == 0;
-    }
-
-    private static boolean isOdd(long number){
-        return number % 2 != 0;
-    }
-
-    public enum Status {
-        REQUEST, FINISH
-    }
-
-    public enum Properties{
-        BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD
-    }
 
 }
