@@ -12,7 +12,7 @@ import static numbers.Input.*;
 public class Main {
 
     public static Status status;
-    public static String[] propertiesList = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "EVEN", "ODD"};
+    public static String[] propertiesList = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING", "EVEN", "ODD"};
 
     public static void main(String[] args) {
 
@@ -31,7 +31,7 @@ public class Main {
         status =  validateInput(status);
     }
 
-    public static void generateNumbers(long startNumber, long times, Properties p1, Properties p2, Quantity qtt) {
+    public static void generateNumbers(long startNumber, long times, List<Properties> propertiesArrayList, Quantity qtt) {
         List<Long> numbers = new ArrayList<>();
         long range = startNumber + times;
         switch (qtt){
@@ -43,27 +43,19 @@ public class Main {
                     numbers.add(l);
                 }
                 break;
-            case THREE:
+            default:
                 for (long l = startNumber; l < range; l++) {
-                    if(isValid(l, p1)){
+                    List<Boolean> areCommon = new ArrayList<>();
+                    for (Properties properties : propertiesArrayList) {
+                        areCommon.add(isValid(l, properties));
+                    }
+                    if(!areCommon.contains(false)){
                         numbers.add(l);
                     }else{
                         range++;
                     }
                 }
-                break;
-            case FOUR:
-                for (long l = startNumber; l < range; l++) {
-                    if(isValid(l, p1) && isValid(l, p2)){
-                        numbers.add(l);
-                    }else{
-                        range++;
-                    }
-                }
-                break;
         }
-
-
         checkProperties(numbers, qtt);
 
     }
@@ -106,6 +98,11 @@ public class Main {
                     isValid = true;
                 }
                 break;
+            case JUMPING:
+                if (isJumping(l)) {
+                    isValid = true;
+                }
+                break;
             case EVEN:
                 if (isEven(l)) {
                     isValid = true;
@@ -129,6 +126,7 @@ public class Main {
         List<Boolean> palindromicList = new ArrayList<>();
         List<Boolean> gapfulList = new ArrayList<>();
         List<Boolean> spyList = new ArrayList<>();
+        List<Boolean> jumpingList = new ArrayList<>();
         List<Boolean> squareList = new ArrayList<>();
         List<Boolean> sunnyList = new ArrayList<>();
 
@@ -140,10 +138,11 @@ public class Main {
             palindromicList.add(isPalindromic(l));
             gapfulList.add(isGapful(l));
             spyList.add(isSpy(l));
+            jumpingList.add(isJumping(l));
             sunnyList.add(isSunny(l));
             squareList.add(isSquare(l));
         }
-        printResolution(numbers, buzzList, duckList, palindromicList, gapfulList, spyList, sunnyList, squareList, evenList, oddList, qtt);
+        printResolution(numbers, buzzList, duckList, palindromicList, gapfulList, spyList, sunnyList, squareList, jumpingList, evenList, oddList, qtt);
     }
 
 
@@ -155,6 +154,7 @@ public class Main {
                                         List<Boolean> spyList,
                                         List<Boolean> sunnyList,
                                         List<Boolean> squareList,
+                                        List<Boolean> jumpingList,
                                         List<Boolean> evenList,
                                         List<Boolean> oddList,
                                         Quantity qtt) {
@@ -168,8 +168,9 @@ public class Main {
                 String spy = (spyList.get(i)) ? "spy, " : "";
                 String square = (squareList.get(i)) ? "square, " : "";
                 String sunny = (sunnyList.get(i)) ? "sunny, " : "";
+                String jumping = (jumpingList.get(i)) ? "jumping, " : "";
                 String type = (evenList.get(i)) ? "even" : "odd";
-                System.out.println(numbers.get(i) + " is " + buzz + duck + palindromic + gapful + spy + square + sunny + type);
+                System.out.println(numbers.get(i) + " is " + buzz + duck + palindromic + gapful + spy + square + sunny + jumping + type);
             }
         } else {
             System.out.printf("\nProperties of %d\n" +
@@ -180,6 +181,7 @@ public class Main {
                     "spy: %b\n" +
                     "square: %b\n" +
                     "sunny: %b\n" +
+                    "jumping: %b\n" +
                     "even: %b\n"+
                     "odd: %b\n", numbers.get(0),
                     buzzList.get(0),
@@ -189,6 +191,7 @@ public class Main {
                     spyList.get(0),
                     squareList.get(0),
                     sunnyList.get(0),
+                    jumpingList.get(0),
                     evenList.get(0),
                     oddList.get(0) );
         }
