@@ -12,7 +12,10 @@ import static numbers.Input.*;
 public class Main {
 
     public static Status status;
-    public static String[] propertiesList = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING", "EVEN", "ODD"};
+    public static String[] propertiesListFull = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING", "HAPPY", "SAD", "EVEN", "ODD",
+            "-BUZZ", "-DUCK", "-PALINDROMIC", "-GAPFUL", "-SPY", "-SQUARE", "-SUNNY", "-JUMPING", "-HAPPY", "-SAD", "-EVEN", "-ODD"
+    };
+    public static String[] propertiesList = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING", "HAPPY", "SAD", "EVEN", "ODD"};
 
     public static void main(String[] args) {
 
@@ -103,13 +106,67 @@ public class Main {
                     isValid = true;
                 }
                 break;
+            case HAPPY:
+            case EX_SAD:
+                if (isHappy(l)) {
+                    isValid = true;
+                }
+                break;
+            case SAD:
+            case EX_HAPPY:
+                if (!isHappy(l)) {
+                    isValid = true;
+                }
+                break;
             case EVEN:
+            case EX_ODD:
                 if (isEven(l)) {
                     isValid = true;
                 }
                 break;
             case ODD:
+            case EX_EVEN:
                 if (isOdd(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_BUZZ:
+                if (!isBuzz(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_DUCK:
+                if (!isDuck(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_PALINDROMIC:
+                if (!isPalindromic(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_GAPFUL:
+                if (!isGapful(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_SPY:
+                if (!isSpy(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_SUNNY:
+                if (!isSunny(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_SQUARE:
+                if (!isSquare(l)) {
+                    isValid = true;
+                }
+                break;
+            case EX_JUMPING:
+                if (!isJumping(l)) {
                     isValid = true;
                 }
                 break;
@@ -127,6 +184,8 @@ public class Main {
         List<Boolean> gapfulList = new ArrayList<>();
         List<Boolean> spyList = new ArrayList<>();
         List<Boolean> jumpingList = new ArrayList<>();
+        List<Boolean> happyList = new ArrayList<>();
+        List<Boolean> sadList = new ArrayList<>();
         List<Boolean> squareList = new ArrayList<>();
         List<Boolean> sunnyList = new ArrayList<>();
 
@@ -139,10 +198,25 @@ public class Main {
             gapfulList.add(isGapful(l));
             spyList.add(isSpy(l));
             jumpingList.add(isJumping(l));
+            happyList.add(isHappy(l));
+            sadList.add(!isHappy(l));
             sunnyList.add(isSunny(l));
             squareList.add(isSquare(l));
         }
-        printResolution(numbers, buzzList, duckList, palindromicList, gapfulList, spyList, sunnyList, squareList, jumpingList, evenList, oddList, qtt);
+        printResolution(numbers,
+                buzzList,
+                duckList,
+                palindromicList,
+                gapfulList,
+                spyList,
+                sunnyList,
+                squareList,
+                jumpingList,
+                happyList,
+                sadList,
+                evenList,
+                oddList,
+                qtt);
     }
 
 
@@ -155,6 +229,8 @@ public class Main {
                                         List<Boolean> sunnyList,
                                         List<Boolean> squareList,
                                         List<Boolean> jumpingList,
+                                        List<Boolean> happyList,
+                                        List<Boolean> sadList,
                                         List<Boolean> evenList,
                                         List<Boolean> oddList,
                                         Quantity qtt) {
@@ -169,8 +245,21 @@ public class Main {
                 String square = (squareList.get(i)) ? "square, " : "";
                 String sunny = (sunnyList.get(i)) ? "sunny, " : "";
                 String jumping = (jumpingList.get(i)) ? "jumping, " : "";
+                String happy = (happyList.get(i)) ? "happy, " : "";
+                String sad = (sadList.get(i)) ? "sad, " : "";
                 String type = (evenList.get(i)) ? "even" : "odd";
-                System.out.println(numbers.get(i) + " is " + buzz + duck + palindromic + gapful + spy + square + sunny + jumping + type);
+                System.out.println(numbers.get(i) + " is "
+                        + buzz
+                        + duck
+                        + palindromic
+                        + gapful
+                        + spy
+                        + square
+                        + sunny
+                        + jumping
+                        + happy
+                        + sad
+                        + type);
             }
         } else {
             System.out.printf("\nProperties of %d\n" +
@@ -182,6 +271,8 @@ public class Main {
                     "square: %b\n" +
                     "sunny: %b\n" +
                     "jumping: %b\n" +
+                    "happy: %b\n" +
+                    "sad: %b\n" +
                     "even: %b\n"+
                     "odd: %b\n", numbers.get(0),
                     buzzList.get(0),
@@ -192,6 +283,8 @@ public class Main {
                     squareList.get(0),
                     sunnyList.get(0),
                     jumpingList.get(0),
+                    happyList.get(0),
+                    sadList.get(0),
                     evenList.get(0),
                     oddList.get(0) );
         }
